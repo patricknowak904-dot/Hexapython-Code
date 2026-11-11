@@ -1,0 +1,339 @@
+HexaPython - L'Intelligence Artificielle de A à Z
+Épisode 1 : Qu'est-ce qu'un modèle d'IA ?
+
+Promesse : une IA en Python pur qui devine le prix d'un appartement.
+Fil rouge : comment deviner un prix qu'on ne lui a jamais donné ?
+
+Programme de l'épisode (b004) :
+  1. Un modèle = une fonction avec des boutons (paramètres)
+  2. Des données d'entraînement et de test
+  3. Un juge : la fonction de coût (MSE)
+  4. Chercher le meilleur réglage : force brute, puis moindres carrés
+  5. Supervisé contre non supervisé
+  6. Prédire, se méfier, éviter les pièges
+  7. Le défi : un modèle à trois boutons
+
+==================================================================
+[b002] Le cœur de notre future IA : une fonction
+==================================================================
+160
+
+==================================================================
+[b006] Deux boutons : modele(surface, poids, biais)
+==================================================================
+160
+140
+200
+
+==================================================================
+[b007] Six appartements (lus dans data/appartements.csv)
+==================================================================
+20 m2 -> 70 000 euros
+30 m2 -> 100 000 euros
+45 m2 -> 140 000 euros
+60 m2 -> 190 000 euros
+75 m2 -> 230 000 euros
+90 m2 -> 280 000 euros
+6 exemples
+
+Le chemin complet (b008) : données -> réglage du modèle -> prédiction
+
+==================================================================
+[b009] Programmation classique : des règles écrites à la main
+==================================================================
+20 m2 : vrai prix 70 | règle manuelle 90
+30 m2 : vrai prix 100 | règle manuelle 90
+45 m2 : vrai prix 140 | règle manuelle 180
+60 m2 : vrai prix 190 | règle manuelle 180
+75 m2 : vrai prix 230 | règle manuelle 260
+90 m2 : vrai prix 280 | règle manuelle 260
+Avec l'apprentissage, on donne les réponses... et la machine trouve la règle.
+
+==================================================================
+[b010] Un réglage testé sur six appartements (poids 2, biais 40)
+==================================================================
+20 70 80 10
+30 100 100 0
+45 140 130 -10
+60 190 160 -30
+75 230 190 -40
+90 280 220 -60
+
+==================================================================
+[b012] Premier juge : la somme des erreurs... aveugle !
+==================================================================
+0
+0
+
+==================================================================
+[b013] Le vrai juge : l'erreur quadratique moyenne (MSE)
+==================================================================
+8.3
+3308.3
+
+b016 - coût divisé par environ 397 entre le modèle absurde et le bon réglage
+
+==================================================================
+[b014-b015] Pourquoi le carré ? Impitoyable avec les gros ratés
+==================================================================
+erreur 2 -> coût 4
+erreur 10 -> coût 100
+erreur 100 -> coût 10000
+
+écart absolu moyen : dix petits ratés 1.0 | un gros raté 1.0
+MSE                : dix petits ratés 1.0 | un gros raté 10.0
+
+==================================================================
+[b017] Laisser la machine chercher : la force brute
+==================================================================
+poids : 3 biais : 20
+coût entraînement : 6.25
+coût test : 12.5
+(36 essais)
+
+==================================================================
+[b019] La recette de presque tous les modèles
+==================================================================
+  1. Choisir une forme de modèle (ici une droite à deux boutons)
+  2. Choisir un juge (ici la MSE)
+  3. Chercher le réglage qui minimise le coût sur l'entraînement
+  4. Vérifier sur des données jamais vues (le test)
+
+==================================================================
+[b020] Le hic : une grille plus fine coûte très cher
+==================================================================
+Grille grossière : 6 x 6 = 36 essais
+Grille fine      : 1000 x 1000 = 1000000 essais
+
+==================================================================
+[b022] L'explosion combinatoire
+==================================================================
+1 bouton(s) : 101 essais
+2 bouton(s) : 10201 essais
+3 bouton(s) : 1030301 essais
+10 bouton(s) : 110462212541120451001 essais
+À un milliard d'essais par seconde : 3503 ans pour 10 boutons
+
+==================================================================
+[b023] La formule de Legendre (1805) : les moindres carrés
+==================================================================
+poids : 3.0
+biais : 20.0
+
+==================================================================
+[b024] Les ressorts : l'énergie est la somme des carrés
+==================================================================
+règle poids 3, biais 20 -> énergie des ressorts : 16.0
+règle poids 3.1, biais 20 -> énergie des ressorts : 136.0
+règle poids 3, biais 22 -> énergie des ressorts : 32.0
+La position d'équilibre (poids 3, biais 20) est la droite des moindres carrés.
+
+==================================================================
+[b025] Juger sur des appartements jamais vus
+==================================================================
+MSE entraînement : 4.0
+MSE test : 16.0
+
+==================================================================
+[b026] RMSE : revenir à des euros
+==================================================================
+RMSE test : 4.0 milliers d'euros
+Soit environ 2 % d'un bien à 200 000 euros
+
+==================================================================
+[b027] Notre IA complète, en Python pur
+==================================================================
+Réglage : 3.0 20.0
+MSE test : 16.0
+55 m² : 185.0 k€
+
+==================================================================
+[b029] Apprentissage supervisé : des exemples étiquetés
+==================================================================
+30 m2 -> 95000 euros
+45 m2 -> 140000 euros
+60 m2 -> 185000 euros
+
+==================================================================
+[b031] Supervisé contre non supervisé
+==================================================================
+Supervisé     : données + étiquettes -> prédire la bonne réponse
+Non supervisé : données seules       -> trouver une structure cachée
+
+==================================================================
+[b032] Non supervisé : des surfaces, aucun prix
+==================================================================
+Écarts successifs : [3, 3, 42, 5, 6]
+Groupe A : [22, 25, 28]
+Groupe B : [70, 75, 81]
+
+==================================================================
+[b033] Ai-je la réponse que je veux prédire ?
+==================================================================
+Prix d'appartements (ventes passées connues) -> supervisé
+Familles de clients à découvrir -> non supervisé
+
+==================================================================
+[b034] Lire les boutons : ils ont un sens
+==================================================================
+125000 128000 3000
+5000
+
+==================================================================
+[b035] Utiliser notre IA pour de vrai
+==================================================================
+25 m2 -> 80000 euros
+52 m2 -> 161000 euros
+90 m2 -> 275000 euros
+
+==================================================================
+[b037] Terrain connu ou extrapolation ?
+==================================================================
+Surfaces d'entraînement : de 20 à 65 m2
+25 m2 : terrain connu
+52 m2 : terrain connu
+90 m2 : EXTRAPOLATION
+
+==================================================================
+[b038] Poussons la droite jusqu'à l'absurde
+==================================================================
+1 m2 -> 8000 euros
+5 m2 -> 20000 euros
+500 m2 -> 1505000 euros
+
+==================================================================
+[b039] Ce qu'on garde vraiment : deux nombres
+==================================================================
+{"poids": 3000, "biais": 5000}
+30 caracteres
+Modèle enregistré dans sorties/modele.json
+Rechargé, il prédit 52 m2 -> 161000 euros
+
+==================================================================
+[b040] Une question d'échelle
+==================================================================
+Notre IA : 2 paramètres | grands modèles de langage : des milliards
+
+==================================================================
+[b042] Le match : modèle paresseux contre notre droite
+==================================================================
+modele bete : 44060 euros
+notre IA : 1581 euros
+(le modèle bête répond toujours 132500.0 euros)
+Notre IA se trompe environ 28 fois moins
+Réglage appris par moindres carrés sur ces ventes : 3000.0 5000.0
+
+==================================================================
+[b044] Deux informations : surface et nombre de pièces
+==================================================================
+170000
+270000
+
+==================================================================
+[b046] Piège n°1 : les unités
+==================================================================
+190000
+190
+
+==================================================================
+[b047] Piège n°2 : un ensemble de test vide
+==================================================================
+ZeroDivisionError : division by zero
+Bon réflexe : taille du test = 0 exemple(s)
+
+==================================================================
+[b048] Piège n°3 : zip abandonne sans prévenir
+==================================================================
+3
+(60, 190000)
+
+==================================================================
+[b050] La parade : comparer les longueurs
+==================================================================
+Données incohérentes : 4 surfaces, 3 prix
+Avec zip(..., strict=True) : zip() argument 2 is shorter than argument 1
+
+==================================================================
+[b052] Le défi : un modèle à trois boutons
+==================================================================
+30 m2, 1 pièce(s) -> 105 k€
+45 m2, 2 pièce(s) -> 155 k€
+60 m2, 3 pièce(s) -> 205 k€
+80 m2, 3 pièce(s) -> 265 k€
+100 m2, 4 pièce(s) -> 330 k€
+
+==================================================================
+[b054] La solution : trois boucles imbriquées
+==================================================================
+Essais : 1386
+Meilleur réglage : (3, 5, 10)
+Coût : 0.0
+
+==================================================================
+[b055-b056] Chaque curseur multiplie le travail
+==================================================================
++ un bouton étage (0 à 10) : 15246 essais
++ un bouton quartier (0 à 20) : 320166 essais
+
+==================================================================
+[b057] Le modèle et son juge
+==================================================================
+2 20 0.0
+2 30 100.0
+
+==================================================================
+[b058] Les moindres carrés, encore une fois
+==================================================================
+2.0 20.0
+120.0
+
+==================================================================
+[b059] Force brute contre formule
+==================================================================
+Force brute (36 essais) : poids 3, biais 20, MSE 8.33
+Formule (une seule passe) : poids 2.914, biais 24.000, MSE 5.48
+La bonne réponse tombait entre deux crans : la grille l'a ratée.
+
+==================================================================
+[b061] Six idées à retenir
+==================================================================
+  1. Un modèle est une fonction dont les paramètres sont appris à partir de données.
+  2. Régression linéaire : un poids (prix du m2) et un biais (prix de départ).
+  3. Un juge chiffré, la fonction de coût : ici la MSE.
+  4. On garde un ensemble de test pour juger sur des cas jamais vus.
+  5. Avec étiquettes : supervisé ; groupes sans étiquettes : non supervisé.
+  6. Tout essayer marche pour deux boutons, puis explose.
+
+==================================================================
+[b062] Trois questions éclair
+==================================================================
+Q : Clients avec âge, revenu et achat oui/non : supervisé ?
+R : Oui, chaque exemple a sa bonne réponse.
+Q : Pourquoi mettre les erreurs au carré ?
+R : Pour éviter les annulations et punir les gros ratés.
+Q : Erreur minuscule sur l'entraînement : je déploie ?
+R : Pas encore : il faut d'abord juger sur le test.
+
+==================================================================
+[b063] La promesse tenue : une IA en Python pur
+==================================================================
+Réglage appris : poids 3.0, biais 20.0
+MSE test : 16.0 | prédiction pour 55 m² : 185.0 k€
+
+==================================================================
+[b064] La suite de la saison
+==================================================================
+  Épisode 2 (ou plus) : La descente de gradient
+  Épisode 3 (ou plus) : La classification
+  Épisode 4 (ou plus) : Préparer de vraies données
+  Épisode 5 (ou plus) : Le surapprentissage
+  Épisode 6 (ou plus) : Le premier neurone artificiel
+
+==================================================================
+[b065-b068] La question ouverte
+==================================================================
+Comment régler des millions de paramètres sans tout essayer ?
+Réponse au prochain épisode : la descente de gradient.
+Et toi, quel prix aimerais-tu prédire ? Dis-le en commentaire !
+
+Fin de l'épisode 1. Prochain épisode : la descente de gradient !

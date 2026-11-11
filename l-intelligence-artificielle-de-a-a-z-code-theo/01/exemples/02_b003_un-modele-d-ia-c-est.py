@@ -1,0 +1,3 @@
+# Exemple 2 — Un modèle d'IA, c'est…
+
+prix = poids * surface + biais
